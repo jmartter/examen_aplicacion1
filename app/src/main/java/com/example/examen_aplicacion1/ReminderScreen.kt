@@ -1,5 +1,6 @@
 package com.example.examen_aplicacion1
 
+import android.view.ContextMenu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.ui.res.stringResource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.examen_aplicacion1.ui.theme.Examen_aplicacion1Theme
 
@@ -39,7 +41,7 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Mis Recordatorios",
+                text = stringResource(id = R.string.my_reminders),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(top = 32.dp)
             )
@@ -48,7 +50,7 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
                 TextField(
                     value = reminderText,
                     onValueChange = { reminderText = it },
-                    label = { Text("Nuevo Recordatorio") },
+                    label = { Text(stringResource(id = R.string.new_reminder)) },
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(
@@ -68,7 +70,7 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
                         }
                     }
                 ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "Añadir")
+                    Icon(imageVector = Icons.Default.Add, contentDescription = stringResource(id = R.string.add))
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -96,19 +98,22 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = { showDone = false }) {
-                Text("Pendientes")
+                Text(stringResource(id = R.string.pending))
             }
             Button(onClick = { showDone = true }) {
-                Text("Hechas")
+                Text(stringResource(id = R.string.done))
             }
         }
     }
 
-    if (showMenu && selectedReminder != null) {
-        ContextMenu(
-            reminder = selectedReminder!!,
-            onDismiss = { showMenu = false },
-            onDelete = {
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
+    ) {
+        DropdownMenuItem(
+            text = { Text("Eliminar") },
+            onClick = {
+                // Acción de eliminar
                 recordatorios = recordatorios.filter { it != selectedReminder }
                 db.collection("recordatorios")
                     .whereEqualTo("text", selectedReminder!!.text)
@@ -119,8 +124,12 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
                         }
                     }
                 showMenu = false
-            },
-            onMarkAsDone = {
+            }
+        )
+        DropdownMenuItem(
+            text = { Text("Marcar como hecho") },
+            onClick = {
+                // Acción de marcar como hecho
                 val updatedReminder = selectedReminder!!.copy(isDone = true)
                 recordatorios = recordatorios.map {
                     if (it == selectedReminder) updatedReminder else it
@@ -137,42 +146,5 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
                 showMenu = false
             }
         )
-    }
-}
-
-@Composable
-fun ContextMenu(
-    reminder: Reminder,
-    onDismiss: () -> Unit,
-    onDelete: () -> Unit,
-    onMarkAsDone: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = "Opciones") },
-        text = { Text(text = "Selecciona una opción para el recordatorio") },
-        confirmButton = {
-            Column {
-                TextButton(onClick = onDelete) {
-                    Text("Eliminar")
-                }
-                TextButton(onClick = onMarkAsDone) {
-                    Text("Hecho")
-                }
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    Examen_aplicacion1Theme {
-        ReminderApp(FirebaseFirestore.getInstance(), listOf())
     }
 }

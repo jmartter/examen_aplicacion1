@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">examen_aplicacion1</string>
+    <string name="app_name">Examen Aplicacion 1</string>
+    <string name="my_reminders">My Reminders</string>
+    <string name="new_reminder">New Reminder</string>
+    <string name="add">Add</string>
+    <string name="pending">Pending</string>
+    <string name="done">Done</string>
+    <string name="options">Options</string>
+    <string name="select_option">Select an option for the reminder</string>
+    <string name="delete">Delete</string>
+    <string name="mark_as_done">Mark as Done</string>
+    <string name="cancel">Cancel</string>
+    <string name="change_language">Change Language</string>
 </resources>
