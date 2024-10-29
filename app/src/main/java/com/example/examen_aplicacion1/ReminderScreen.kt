@@ -1,12 +1,15 @@
 package com.example.examen_aplicacion1
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.firestore.FirebaseFirestore
@@ -20,61 +23,81 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
     var showMenu by remember { mutableStateOf(false) }
     var showDone by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Mis Recordatorios", style = MaterialTheme.typography.headlineMedium)
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = reminderText,
-            onValueChange = { reminderText = it },
-            label = { Text("Nuevo Recordatorio") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                if (reminderText.isNotEmpty()) {
-                    val newReminder = Reminder(reminderText)
-                    recordatorios = recordatorios + newReminder
-                    reminderText = ""
-                    db.collection("recordatorios")
-                        .add(newReminder)
-                        .addOnSuccessListener { documentReference ->
-                            // Éxito al agregar el recordatorio
-                        }
-                        .addOnFailureListener { e ->
-                            // Error al agregar el recordatorio
-                        }
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Añadir")
+            Text(
+                text = "Mis Recordatorios",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(top = 32.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = reminderText,
+                onValueChange = { reminderText = it },
+                label = { Text("Nuevo Recordatorio") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(
+                onClick = {
+                    if (reminderText.isNotEmpty()) {
+                        val newReminder = Reminder(reminderText)
+                        recordatorios = recordatorios + newReminder
+                        reminderText = ""
+                        db.collection("recordatorios")
+                            .add(newReminder)
+                            .addOnSuccessListener { documentReference ->
+                                // Éxito al agregar el recordatorio
+                            }
+                            .addOnFailureListener { e ->
+                                // Error al agregar el recordatorio
+                            }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Añadir")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn {
+                items(recordatorios.filter { it.isDone == showDone }) { reminder ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .background(if (reminder == selectedReminder) Color.LightGray else Color.Transparent)
+                            .clickable {
+                                selectedReminder = reminder
+                                showMenu = true
+                            },
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = reminder.text, style = MaterialTheme.typography.bodyLarge)
+                    }
+                    Divider()
+                }
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Button(onClick = { showDone = false }) {
                 Text("Pendientes")
             }
             Button(onClick = { showDone = true }) {
                 Text("Hechas")
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
-            items(recordatorios.filter { it.isDone == showDone }) { reminder ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable {
-                            selectedReminder = reminder
-                            showMenu = true
-                        },
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = reminder.text, style = MaterialTheme.typography.bodyLarge)
-                }
-                Divider()
             }
         }
     }
