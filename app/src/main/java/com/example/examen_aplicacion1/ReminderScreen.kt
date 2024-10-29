@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.examen_aplicacion1.ui.theme.Examen_aplicacion1Theme
 
@@ -42,32 +44,32 @@ fun ReminderApp(db: FirebaseFirestore, initialReminders: List<Reminder>) {
                 modifier = Modifier.padding(top = 32.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            TextField(
-                value = reminderText,
-                onValueChange = { reminderText = it },
-                label = { Text("Nuevo Recordatorio") },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    if (reminderText.isNotEmpty()) {
-                        val newReminder = Reminder(reminderText)
-                        recordatorios = recordatorios + newReminder
-                        reminderText = ""
-                        db.collection("recordatorios")
-                            .add(newReminder)
-                            .addOnSuccessListener { documentReference ->
-                                // Éxito al agregar el recordatorio
-                            }
-                            .addOnFailureListener { e ->
-                                // Error al agregar el recordatorio
-                            }
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                TextField(
+                    value = reminderText,
+                    onValueChange = { reminderText = it },
+                    label = { Text("Nuevo Recordatorio") },
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(
+                    onClick = {
+                        if (reminderText.isNotEmpty()) {
+                            val newReminder = Reminder(reminderText)
+                            recordatorios = recordatorios + newReminder
+                            reminderText = ""
+                            db.collection("recordatorios")
+                                .add(newReminder)
+                                .addOnSuccessListener { documentReference ->
+                                    // Éxito al agregar el recordatorio
+                                }
+                                .addOnFailureListener { e ->
+                                    // Error al agregar el recordatorio
+                                }
+                        }
                     }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Añadir")
+                ) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Añadir")
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
