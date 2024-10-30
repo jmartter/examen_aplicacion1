@@ -26,7 +26,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         db = FirebaseFirestore.getInstance()
 
-        // Fetch data from Firebase Firestore
         db.collection("recordatorios")
             .get()
             .addOnSuccessListener { result: QuerySnapshot ->
@@ -51,7 +50,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
             .addOnFailureListener { exception ->
-                // Handle the error
             }
     }
 
@@ -64,7 +62,7 @@ class MainActivity : ComponentActivity() {
             val config = Configuration(resources.configuration)
             config.setLocale(newLocale)
             resources.updateConfiguration(config, resources.displayMetrics)
-            recreate() // Restart activity to apply changes
+            recreate()
         }) {
             Text(text = getString(R.string.change_language))
         }
