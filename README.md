@@ -1,7 +1,7 @@
 # Examen Aplicacion 1
 
 ## Enlace al Repositorio
-[Repositorio en GitHub](https://github.com/jmartter/Feedback1_Eventos.git)
+[Repositorio en GitHub](https://github.com/jmartter/examen_aplicacion1.git)
 
 ## Descripción General
 
